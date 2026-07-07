@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcuMarketScale - Estrategia TAM SAM SOM Ecuador</title>
+    
+    <!-- Librerías Externas -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        ecuYellow: '#FFD700',
+                        ecuBlue: '#00468B',
+                        ecuRed: '#DA291C',
+                        darkBg: '#0f172a',
+                        glass: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .funnel-circle {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .funnel-circle:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        .ecu-gradient {
+            background: linear-gradient(90deg, #FFD700 0%, #00468B 50%, #DA291C 100%);
+            height: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-500">
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <nav class="fixed w-full z-50 glass-card border-b">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-ecuBlue rounded-lg flex items-center justify-center">
+                    <i data-lucide="bar-chart-3" class="text-ecuYellow w-5 h-5"></i>
+                </div>
+                <span class="font-extrabold text-xl tracking-tighter">EcuMarket<span class="text-ecuBlue dark:text-ecuYellow">Scale</span></span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                    <i data-lucide="moon" id="theme-icon" class="w-5 h-5"></i>
+                </button>
+                <div class="hidden md:flex gap-1">
+                    <div class="w-3 h-3 rounded-full bg-ecuYellow"></div>
+                    <div class="w-3 h-3 rounded-full bg-ecuBlue"></div>
+                    <div class="w-3 h-3 rounded-full bg-ecuRed"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-24 pb-12 px-4 max-w-7xl mx-auto space-y-16">
+        
+        <!-- SECCIÓN: INTRODUCCIÓN Y MIOPÍA -->
+        <section class="grid lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <h1 class="text-5xl md:text-6xl font-extrabold leading-tight">
+                    Domina el Mercado <br>
+                    <span class="text-ecuBlue dark:text-ecuYellow">Ecuatoriano</span>
+                </h1>
+                <p class="text-lg text-slate-600 dark:text-slate-400">
+                    Calcula tu oportunidad real de negocio. No vendas productos, vende soluciones. Aprende a diferenciar el mercado total del mercado que realmente puedes capturar.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <div class="glass-card p-4 rounded-xl flex items-center gap-3">
+                        <i data-lucide="alert-triangle" class="text-ecuRed"></i>
+                        <div>
+                            <p class="text-xs font-bold uppercase text-slate-500">La Trampa del 1%</p>
+                            <p class="text-sm">Asumir el 1% sin estrategia es el camino al fracaso.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="relative">
+                <div class="absolute -top-10 -left-10 w-32 h-32 bg-ecuYellow/20 rounded-full blur-3xl"></div>
+                <div class="glass-card p-8 rounded-3xl relative overflow-hidden">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <i data-lucide="eye" class="text-ecuBlue"></i> Miopía del Mercado
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-ecuRed/10 border-l-4 border-ecuRed rounded-r-lg">
+                            <p class="text-sm italic">"Vendo café filtrado de altura en Quito."</p>
+                            <span class="text-xs font-bold text-ecuRed uppercase">Enfoque Erróneo</span>
+                        </div>
+                        <div class="p-4 bg-green-500/10 border-l-4 border-green-500 rounded-r-lg">
+                            <p class="text-sm italic">"Ofrezco un espacio de productividad y networking para freelancers en La Carolina."</p>
+                            <span class="text-xs font-bold text-green-500 uppercase">Enfoque Estratégico</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: EMBUDO INTERACTIVO -->
+        <section class="py-12 bg-ecuBlue/5 rounded-[3rem] border border-ecuBlue/10 p-8">
+            <h2 class="text-3xl font-bold text-center mb-12">El Embudo de Oportunidad</h2>
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="flex justify-center relative h-[400px]">
+                    <!-- Círculos concéntricos -->
+                    <div id="circle-tam" class="funnel-circle absolute rounded-full bg-ecuYellow/40 border-2 border-ecuYellow flex items-start justify-center pt-8" style="width: 380px; height: 380px;">
+                        <span class="font-black text-ecuYellow-900">TAM</span>
+                        <div id="circle-sam" class="funnel-circle absolute rounded-full bg-ecuBlue/40 border-2 border-ecuBlue flex items-start justify-center pt-8" style="width: 260px; height: 260px; top: 60px;">
+                            <span class="font-black text-white">SAM</span>
+                            <div id="circle-som" class="funnel-circle absolute rounded-full bg-ecuRed/40 border-2 border-ecuRed flex items-center justify-center" style="width: 140px; height: 140px; top: 60px;">
+                                <span class="font-black text-white">SOM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="glass-card p-6 rounded-2xl hover:translate-x-2 transition-transform cursor-pointer" onclick="showInfo('tam')">
+                        <h4 class="font-bold text-ecuYellow-600 flex items-center gap-2 text-lg">TAM - Total Addressable Market</h4>
+                        <p class="text-sm text-slate-500">¿Cuál es el tamaño total del universo donde opera tu producto?</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl hover:translate-x-2 transition-transform cursor-pointer" onclick="showInfo('sam')">
+                        <h4 class="font-bold text-ecuBlue flex items-center gap-2 text-lg">SAM - Serviceable Available Market</h4>
+                        <p class="text-sm text-slate-500">¿A qué parte de ese universo puedes llegar con tu modelo actual?</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl hover:translate-x-2 transition-transform cursor-pointer" onclick="showInfo('som')">
+                        <h4 class="font-bold text-ecuRed flex items-center gap-2 text-lg">SOM - Serviceable Obtainable Market</h4>
+                        <p class="text-sm text-slate-500">¿Qué porción capturarás realmente en los próximos 1-2 años?</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: CALCULADORA INTELIGENTE -->
+        <section class="grid lg:grid-cols-12 gap-8">
+            <!-- Formulario -->
+            <div class="lg:col-span-5 space-y-8">
+                <div class="glass-card p-8 rounded-3xl shadow-xl">
+                    <div class="flex items-center gap-2 mb-6">
+                        <i data-lucide="calculator" class="text-ecuBlue"></i>
+                        <h2 class="text-2xl font-bold uppercase tracking-tight">Calculadora <span class="text-ecuBlue">PRO</span></h2>
+                    </div>
+
+                    <div class="space-y-5">
+                        <!-- Casos Predefinidos -->
+                        <div class="pb-4">
+                            <label class="text-[10px] font-bold uppercase text-slate-400 mb-2 block tracking-widest">Ejemplos Rápidos (Ecuador)</label>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="loadCase('restaurante')" class="px-3 py-1.5 rounded-full bg-slate-200 dark:bg-slate-700 text-xs hover:bg-ecuBlue hover:text-white transition-all">Restaurante Quito</button>
+                                <button onclick="loadCase('tech')" class="px-3 py-1.5 rounded-full bg-slate-200 dark:bg-slate-700 text-xs hover:bg-ecuBlue hover:text-white transition-all">Software Guayaquil</button>
+                                <button onclick="loadCase('cafe')" class="px-3 py-1.5 rounded-full bg-slate-200 dark:bg-slate-700 text-xs hover:bg-ecuBlue hover:text-white transition-all">Cafetería Cuenca</button>
+                            </div>
+                        </div>
+
+                        <div class="ecu-gradient rounded-full"></div>
+
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Población Objetivo (Universo)</label>
+                            <div class="flex gap-2">
+                                <select id="provincia-select" class="w-full bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 outline-none" onchange="updateByGeography()">
+                                    <option value="18000000">Todo el Ecuador</option>
+                                    <option value="3228000">Pichincha</option>
+                                    <option value="4391000">Guayas</option>
+                                    <option value="881000">Azuay</option>
+                                    <option value="585000">Manabí</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold mb-2">Ticket Promedio ($)</label>
+                                <input type="number" id="price" value="25" class="w-full bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700" oninput="calculate()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold mb-2">Frecuencia (año)</label>
+                                <input type="number" id="freq" value="12" class="w-full bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700" oninput="calculate()">
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-2">
+                                    <span>ALCANCE GEOGRÁFICO (SAM %)</span>
+                                    <span id="sam-perc-text" class="text-ecuBlue">15%</span>
+                                </div>
+                                <input type="range" id="sam-perc" min="1" max="100" value="15" class="w-full accent-ecuBlue" oninput="calculate()">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-2">
+                                    <span>CAPACIDAD DE CAPTURA (SOM %)</span>
+                                    <span id="som-perc-text" class="text-ecuRed">2%</span>
+                                </div>
+                                <input type="range" id="som-perc" min="0.1" max="10" step="0.1" value="2" class="w-full accent-ecuRed" oninput="calculate()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex gap-3">
+                        <button onclick="exportPDF()" class="flex-1 bg-slate-900 dark:bg-white dark:text-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all">
+                            <i data-lucide="download" class="w-4 h-4"></i> Reporte PDF
+                        </button>
+                        <button onclick="resetAll()" class="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-ecuRed hover:text-white transition-all">
+                            <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard de Resultados -->
+            <div id="results-area" class="lg:col-span-7 space-y-8">
+                <!-- KPIs -->
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="glass-card p-6 rounded-3xl border-t-4 border-ecuYellow">
+                        <p class="text-xs font-bold text-slate-400 uppercase">TAM Anual</p>
+                        <h2 id="res-tam" class="text-2xl font-black mt-1">$0</h2>
+                    </div>
+                    <div class="glass-card p-6 rounded-3xl border-t-4 border-ecuBlue">
+                        <p class="text-xs font-bold text-slate-400 uppercase">SAM Anual</p>
+                        <h2 id="res-sam" class="text-2xl font-black mt-1">$0</h2>
+                    </div>
+                    <div class="glass-card p-6 rounded-3xl border-t-4 border-ecuRed">
+                        <p class="text-xs font-bold text-slate-400 uppercase">SOM Anual</p>
+                        <h2 id="res-som" class="text-2xl font-black mt-1">$0</h2>
+                    </div>
+                </div>
+
+                <!-- Gráfico -->
+                <div class="glass-card p-8 rounded-3xl h-[400px] flex flex-col">
+                    <h3 class="font-bold mb-6 flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="text-ecuBlue"></i> Proyección de Distribución
+                    </h3>
+                    <div class="flex-1 relative">
+                        <canvas id="marketChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Diagnóstico -->
+                <div class="glass-card p-8 rounded-3xl bg-gradient-to-br from-ecuBlue/5 to-transparent">
+                    <h3 class="font-bold mb-4 flex items-center gap-2">
+                        <i data-lucide="brain-circuit" class="text-ecuBlue"></i> Diagnóstico Ecuatoriano
+                    </h3>
+                    <div id="diagnosis-text" class="text-sm text-slate-600 dark:text-slate-400 space-y-4">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ESTRATEGIAS DE ESTIMACIÓN -->
+        <section class="grid md:grid-cols-2 gap-8">
+            <div class="glass-card p-8 rounded-3xl border-l-8 border-ecuBlue">
+                <span class="text-ecuBlue font-black text-4xl mb-4 block">01</span>
+                <h3 class="text-2xl font-bold mb-3">Método Top-Down</h3>
+                <p class="text-sm text-slate-500 mb-4">Basado en datos macro. Ejemplo: Tomas el PIB de Ecuador, el porcentaje que gasta el ecuatoriano en comida y divides por provincia.</p>
+                <div class="p-3 bg-ecuBlue/10 rounded-xl text-xs font-mono">Útil para presentaciones de inversión rápidas.</div>
+            </div>
+            <div class="glass-card p-8 rounded-3xl border-l-8 border-ecuRed">
+                <span class="text-ecuRed font-black text-4xl mb-4 block">02</span>
+                <h3 class="text-2xl font-bold mb-3">Método Bottom-Up</h3>
+                <p class="text-sm text-slate-500 mb-4">Basado en tu capacidad operativa. Ejemplo: Cuántas mesas tienes, cuántos pedidos puedes despachar al día en Guayaquil.</p>
+                <div class="p-3 bg-ecuRed/10 rounded-xl text-xs font-mono">El preferido por los bancos en Ecuador.</div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="max-w-3xl mx-auto space-y-4">
+            <h2 class="text-3xl font-bold text-center mb-8">Preguntas Frecuentes</h2>
+            <details class="glass-card p-6 rounded-2xl group transition-all cursor-pointer">
+                <summary class="font-bold flex justify-between items-center list-none">
+                    ¿Qué datos del INEC son más relevantes?
+                    <i data-lucide="chevron-down" class="group-open:rotate-180 transition-all"></i>
+                </summary>
+                <p class="mt-4 text-sm text-slate-500 italic">Los Censos de Población y la Encuesta de Superficie y Producción Agropecuaria. El INEC proporciona la base de la segmentación demográfica en Ecuador.</p>
+            </details>
+            <details class="glass-card p-6 rounded-2xl group transition-all cursor-pointer">
+                <summary class="font-bold flex justify-between items-center list-none">
+                    ¿Por qué el SOM es tan pequeño?
+                    <i data-lucide="chevron-down" class="group-open:rotate-180 transition-all"></i>
+                </summary>
+                <p class="mt-4 text-sm text-slate-500 italic">El SOM representa el mercado que puedes capturar HOY con tus recursos actuales. Capturar el 100% del mercado es imposible debido a la competencia local y los costos logísticos.</p>
+            </details>
+        </section>
+
+    </main>
+
+    <footer class="py-12 border-t text-center text-slate-400 text-xs">
+        <div class="flex justify-center gap-1 mb-4">
+            <div class="w-8 h-1 bg-ecuYellow"></div>
+            <div class="w-8 h-1 bg-ecuBlue"></div>
+            <div class="w-8 h-1 bg-ecuRed"></div>
+        </div>
+        <p>&copy; 2023 EcuMarketScale Pro. Desarrollado para el ecosistema emprendedor del Ecuador.</p>
+    </footer>
+
+    <script>
+        // Inicialización de Iconos
+        lucide.createIcons();
+
+        let marketChart;
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            maximumFractionDigits: 0
+        });
+
+        // Configuración de Gráfico
+        function initChart() {
+            const ctx = document.getElementById('marketChart').getContext('2d');
+            marketChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['SOM (Captura Real)', 'SAM (Potencial Cercano)', 'TAM (Universo Total)'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#DA291C', '#00468B', '#FFD700'],
+                        borderWidth: 0,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, font: { family: 'Plus Jakarta Sans' } } }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.setAttribute('data-lucide', 'moon');
+            } else {
+                html.classList.add('dark');
+                icon.setAttribute('data-lucide', 'sun');
+            }
+            lucide.createIcons();
+        }
+
+        function calculate() {
+            const universe = parseFloat(document.getElementById('provincia-select').value);
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const freq = parseFloat(document.getElementById('freq').value) || 0;
+            const samPerc = parseFloat(document.getElementById('sam-perc').value);
+            const somPerc = parseFloat(document.getElementById('som-perc').value);
+
+            document.getElementById('sam-perc-text').innerText = samPerc + '%';
+            document.getElementById('som-perc-text').innerText = somPerc + '%';
+
+            // Cálculos
+            const tamValue = universe * price * freq;
+            const samValue = tamValue * (samPerc / 100);
+            const somValue = samValue * (somPerc / 100);
+
+            // Actualizar UI
+            document.getElementById('res-tam').innerText = formatter.format(tamValue);
+            document.getElementById('res-sam').innerText = formatter.format(samValue);
+            document.getElementById('res-som').innerText = formatter.format(somValue);
+
+            // Escalar círculos visualmente
+            document.getElementById('circle-sam').style.transform = `scale(${0.5 + (samPerc / 200)})`;
+            document.getElementById('circle-som').style.transform = `scale(${0.4 + (somPerc / 20)})`;
+
+            // Actualizar Chart
+            marketChart.data.datasets[0].data = [somValue, samValue - somValue, tamValue - samValue];
+            marketChart.update();
+
+            generateDiagnosis(tamValue, samValue, somValue);
+        }
+
+        function generateDiagnosis(tam, sam, som) {
+            const diagDiv = document.getElementById('diagnosis-text');
+            let sizeMsg = tam > 100000000 ? "Tienes un mercado masivo en Ecuador." : "Tu mercado es de nicho especializado.";
+            let efficiency = (som / sam) * 100;
+
+            diagDiv.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="w-2 h-2 rounded-full bg-ecuBlue mt-1.5"></div>
+                    <p>${sizeMsg} El TAM anual de <strong>${formatter.format(tam)}</strong> sugiere una oportunidad de gran escala.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="w-2 h-2 rounded-full bg-ecuYellow mt-1.5"></div>
+                    <p>Tu SAM indica que estás ignorando el ${100 - parseFloat(document.getElementById('sam-perc').value)}% del mercado por geografía o logística. ¿Podrías expandirte a Guayaquil o Quito?</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="w-2 h-2 rounded-full bg-ecuRed mt-1.5"></div>
+                    <p>Tu objetivo de capturar el <strong>${efficiency.toFixed(1)}% del SAM</strong> es ${efficiency > 5 ? 'agresivo. Necesitarás una fuerte inversión en marketing digital.' : 'realista y conservador.'}</p>
+                </div>
+            `;
+        }
+
+        function loadCase(type) {
+            if(type === 'restaurante') {
+                document.getElementById('provincia-select').value = "3228000"; // Pichincha
+                document.getElementById('price').value = 15;
+                document.getElementById('freq').value = 24;
+                document.getElementById('sam-perc').value = 10;
+                document.getElementById('som-perc').value = 1.5;
+            } else if(type === 'tech') {
+                document.getElementById('provincia-select').value = "18000000"; // Ecuador
+                document.getElementById('price').value = 120;
+                document.getElementById('freq').value = 1;
+                document.getElementById('sam-perc').value = 5;
+                document.getElementById('som-perc').value = 0.5;
+            } else if(type === 'cafe') {
+                document.getElementById('provincia-select').value = "881000"; // Azuay
+                document.getElementById('price').value = 6;
+                document.getElementById('freq').value = 50;
+                document.getElementById('sam-perc').value = 20;
+                document.getElementById('som-perc').value = 3;
+            }
+            calculate();
+        }
+
+        function resetAll() {
+            document.getElementById('provincia-select').value = "18000000";
+            document.getElementById('price').value = 25;
+            document.getElementById('freq').value = 12;
+            document.getElementById('sam-perc').value = 15;
+            document.getElementById('som-perc').value = 2;
+            calculate();
+        }
+
+        function exportPDF() {
+            const element = document.getElementById('results-area');
+            const opt = {
+                margin: 0.5,
+                filename: 'Analisis_EcuMarketScale.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function showInfo(part) {
+            const titles = {
+                'tam': 'TAM: El Universo',
+                'sam': 'SAM: Lo que puedes tocar',
+                'som': 'SOM: Tu realidad actual'
+            };
+            const texts = {
+                'tam': 'Si todos en Ecuador compraran tu producto sin importar nada.',
+                'sam': 'El grupo de personas que realmente viven cerca o tienen acceso a tu servicio en Ecuador.',
+                'som': 'Tu plan de ventas real. Cuántos clientes puedes atender con tu equipo actual.'
+            };
+            alert(`${titles[part]}\n\n${texts[part]}`);
+        }
+
+        // Init al cargar
+        window.onload = () => {
+            initChart();
+            calculate();
+        };
+    </script>
+</body>
+</html>
